@@ -26,7 +26,8 @@ class HeapNode(Generic[T]):
 
 class Heap(Generic[T]):
     def __init__(self, heap: List[Tuple[T, int]]):
-        self.__heap = [HeapNode(x, i) for x, i in heap]
+        self.__heap = [HeapNode(x, i) for x, i in set(heap)]
+        self.__dict = dict([(x.val, x) for x in self.__heap])
         self.heapify()
 
     def __len__(self):
@@ -57,13 +58,18 @@ class Heap(Generic[T]):
         return res
 
     def push(self, node: HeapNode[T]):
-        self.__heap.append(node)
+        if node not in self.__heap:
+            self.__heap.append(node)
+        self.__dict[node.val] = node
+        self.heapify()
+
+    def change_cost(self, val: T, new_cost: int):
+        self.__dict[val].cost = new_cost
         self.heapify()
 
     def heapify(self):
         h = self.__heap
-        ll = len(h) - 1 # last leaf
-        current_parent = self.get_parent(ll) # start with last parent
+        current_parent = self.get_parent(len(h) - 1)  # start with last parent (parent of last leaf)
         while current_parent >= 0:
             self.sift_down(current_parent)
             current_parent -= 1
@@ -101,6 +107,9 @@ if __name__ == "__main__":
     print(heap)
     print('Pushing 0 into that heap:')
     heap.push(HeapNode('0', 0))
+    print(heap)
+    print('Changing 10 to cost -1')
+    heap.change_cost('10', -1)
     print(heap)
     print('That array heap sorted:')
     for x in range(len(heap)):
