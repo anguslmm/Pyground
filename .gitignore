@@ -1,0 +1,12 @@
+# DB stuff
+**.bak
+**.dat
+**.dir
+db/
+
+# py stuff
+__pycache__/
+
+# JetBrains stuff
+.idea/
+
