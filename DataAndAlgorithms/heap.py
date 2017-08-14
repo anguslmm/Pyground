@@ -1,5 +1,5 @@
 from random import shuffle
-from typing import Generic, TypeVar, List, Tuple
+from typing import Generic, TypeVar, List, Tuple, Union
 
 T = TypeVar('T')
 
@@ -23,18 +23,23 @@ class HeapNode(Generic[T]):
     def __ge__(self, other):
         return self.cost >= other.cost
 
+    def __hash__(self):
+       return hash(self.val)
+
 
 class Heap(Generic[T]):
     def __init__(self, heap: List[Tuple[T, int]]):
-        self.__heap = [HeapNode(x, i) for x, i in set(heap)]
-        self.__dict = dict([(x.val, x) for x in self.__heap])
+        self.__heap = [HeapNode(val, cost) for val, cost in set(heap)]
+        self.__dict = dict([(node.val, node) for node in self.__heap])
         self.heapify()
 
     def __len__(self):
         return len(self.__heap)
 
-    def __getitem__(self, key: int):
-        return self.__heap[key]
+    def __getitem__(self, key: Union[T, int]) -> HeapNode:
+        if isinstance(key, int):
+            return self.__heap[key]
+        return self.__dict[key]
 
     def __iter__(self):
         return self.__heap.__iter__()
